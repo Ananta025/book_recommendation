@@ -1,11 +1,30 @@
 import { NextResponse } from "next/server";
-import { getBooks, addBook } from "@/lib/books";
+import { getBooks, addBook, resolveDataSource } from "@/lib/books";
+
+/**
+ * Validate that the DATA_SOURCE env var is configured.
+ * Returns a 500 response if missing; never leaks the actual value.
+ */
+function validateConfig() {
+  try {
+    resolveDataSource();
+    return null; // config is valid
+  } catch {
+    return NextResponse.json(
+      { error: "Server configuration error" },
+      { status: 500 }
+    );
+  }
+}
 
 /**
  * GET /api/books
  * Returns the full list of books as JSON.
  */
 export async function GET() {
+  const configError = validateConfig();
+  if (configError) return configError;
+
   try {
     const books = await getBooks();
     return NextResponse.json(books, { status: 200 });
@@ -23,6 +42,9 @@ export async function GET() {
  * Accepts { title, author } in the request body and appends a new book.
  */
 export async function POST(request) {
+  const configError = validateConfig();
+  if (configError) return configError;
+
   try {
     const body = await request.json();
     const { title, author } = body;
