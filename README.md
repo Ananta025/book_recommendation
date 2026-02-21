@@ -104,3 +104,7 @@ Since this app is an interactive tool (not a content/SEO page), CSR keeps the ar
 | `npm run build` | Production build |
 | `npm start` | Start production server |
 | `npm run lint` | Run ESLint |
+
+## Deployment Note
+
+> **File system persistence:** This app uses a local JSON file (`data/books.json`) for storage, which works fully in local development. On serverless platforms such as Vercel, the file system is **read-only and ephemeral** — any books added at runtime will not persist across invocations. For production use, replace the JSON file with a proper database (e.g., PostgreSQL, MongoDB, or a managed service like Supabase/PlanetScale).
